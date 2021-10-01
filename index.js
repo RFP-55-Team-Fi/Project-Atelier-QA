@@ -6,7 +6,7 @@ const db = require('./db/index.js');
 app.listen(3000, () => {
   console.log('listening on port 3000')
 });
-// app.use(express.urlencoded())
+app.use(express.json())
 
 //routes
 //GET /qa/questions
@@ -19,7 +19,7 @@ app.listen(3000, () => {
 //PUT /qa/answers/:answer_id/report
 
 app.get('/qa/questions', (req, res) => {
-  console.log(req.query);
+  // console.log(req.query);
   if (!req.query.product_id) {
     res.sendStatus(422)
   } else {
@@ -54,10 +54,10 @@ app.get('/qa/questions', (req, res) => {
                 })
               }))
             }))
-            .catch((err) => {
-              console.log('errer getting answer photos', err)
-              res.sendStatus(500);
-            })
+              .catch((err) => {
+                console.log('errer getting answer photos', err)
+                res.sendStatus(500);
+              })
               .then(() => res.send(response))
           })
       })
@@ -69,14 +69,32 @@ app.get('/qa/questions', (req, res) => {
 });
 
 app.post('/qa/questions', (req, res) => {
-
+  // console.log(req.body);
+  if (!req.body.body || !req.body.name ||
+    !req.body.email || !req.body.product_id) {
+      res.sendStatus(422);
+    } else {
+      db.insertQuestion(req.body)
+      .catch((err) => {
+        console.log('error posting question', err);
+        res.sendStatus(422)
+      })
+      .then(() => res.sendStatus(201))
+    }
 });
 
 app.get('/qa/questions/:question_id/answers', (req, res) => {
+  db.answersPageQuery(req.params.question_id, req.query.count, req.query.page)
+    .then(results => res.send(results.rows))
+    .catch((err) => {
+      console.log('error getting answers', err)
+      res.sendStatus(500)
+    })
 
 });
 
 app.post('/qa/questions/:question_id/answers', (req, res) => {
+
 
 });
 

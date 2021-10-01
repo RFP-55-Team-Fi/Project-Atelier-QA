@@ -14,7 +14,7 @@ pool.connect((err, client, release) => {
 })
 const questionPageQuery = (values) => {
   return {
-    name: 'question-page-query',
+    name: 'questions-with-pagination',
     text: `SELECT *
     FROM questions
     WHERE product_id=$1
@@ -24,9 +24,33 @@ const questionPageQuery = (values) => {
     values: [values.product_id, values.offset, values.count]
   }
 }
+const insertQuestion = (question) => {
+  console.log(question)
+  question.date = Math.round((new Date()).getTime() / 1000);
+  return {
+    name: 'insert-new-question',
+    text: `INSERT INTO questions
+    (product_id, question_body, question_date, asker_name, asker_email)
+    VALUES ($1, $2, $3, $4, $5)`,
+    values: [question.product_id, question.body,
+      question.date, question.name, question.email]
+  }
+}
+const answersPageQuery = (values) => {
+  return {
+    name: 'answers-with-pagination',
+    text: `SELECT *
+    FROM answers
+    WHERE question_id=$1
+    AND reported=false
+    ORDER BY (SELECT NULL)
+    OFFSET $2 ROWS FETCH NEXT $3 ROWS ONLY`,
+    values: [values.question_id, values.offset, values.count]
+  }
+}
 const answerByQId = (question_id) => {
   return {
-    name: 'answer-by-question-id',
+    name: 'all-answers-with-question-id',
     text: `SELECT *
     FROM answers
     WHERE question_id=$1
@@ -34,9 +58,20 @@ const answerByQId = (question_id) => {
     values: [question_id]
   }
 }
+const insertAnswer = (answer) => {
+  answer.date = Math.round((new Date()).getTime() / 1000);
+  return {
+    name: 'insert-new-answer',
+    text: `INSERT INTO answers
+    (question_id, answer_body, answer_date, answerer_name, answerer_email)
+    VALUES($1, $2, $3, $4, $5)`,
+    values: [answer.question_id, answer.body, answer.date,
+      answer.name, answer.email]
+  }
+}
 const photosByAId = (answer_id) => {
   return {
-    name: 'photos-by-answer-id',
+    name: 'all-photos-with-answer-id',
     text: `SELECT *
     FROM photos
     WHERE answer_id=$1`,
@@ -53,13 +88,27 @@ module.exports = {
       count: count,
       offset: (page - 1) * count
     };
-    console.log(values);
+    // console.log(values);
     return pool.query(questionPageQuery(values))
+  },
+  answersPageQuery: (question_id, count = 5, page = 1) => {
+    var values = {
+      question_id: question_id,
+      count: count,
+      offset: (page - 1) * count
+    }
+    return pool.query(answersPageQuery(values))
   },
   answersQuery: (question_id) => {
     return pool.query(answerByQId(question_id))
   },
   photosQuery: (answer_id) => {
     return pool.query(photosByAId(answer_id))
+  },
+  insertQuestion: (fields) => {
+    return pool.query(insertQuestion(fields))
+  },
+  insertAnswer: (fields) => {
+    return pool.query(insertAnswer(fields))
   }
 }

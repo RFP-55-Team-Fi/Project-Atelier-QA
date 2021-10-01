@@ -6,7 +6,7 @@ question_date BIGINT NOT NULL,
 asker_name VARCHAR NOT NULL,
 asker_email VARCHAR NOT NULL,
 reported boolean DEFAULT false,
-question_helpfulness INT DEFAULT 0
+helpfulness INT DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS answers (
 answer_id SERIAL PRIMARY KEY,

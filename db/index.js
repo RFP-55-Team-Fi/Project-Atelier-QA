@@ -25,7 +25,6 @@ const questionPageQuery = (values) => {
   }
 }
 const insertQuestion = (question) => {
-  console.log(question)
   question.date = Math.round((new Date()).getTime() / 1000);
   return {
     name: 'insert-new-question',
@@ -64,7 +63,8 @@ const insertAnswer = (answer) => {
     name: 'insert-new-answer',
     text: `INSERT INTO answers
     (question_id, answer_body, answer_date, answerer_name, answerer_email)
-    VALUES($1, $2, $3, $4, $5)`,
+    VALUES($1, $2, $3, $4, $5)
+    RETURNING answer_id`,
     values: [answer.question_id, answer.body, answer.date,
       answer.name, answer.email]
   }
@@ -78,6 +78,35 @@ const photosByAId = (answer_id) => {
     values: [answer_id]
   }
 }
+const insertPhoto = (photo) => {
+  return {
+    name: 'insert-new-photo',
+    text: `INSERT INTO photos
+    (answer_id, url)
+    VALUES($1, $2)`,
+    values: [photo.answer_id, photo.url]
+  }
+}
+
+const markHelpful = (table, column, id) => {
+  console.log(table, column, id)
+  return {
+    name: 'add-one-to-helpful-row',
+    text: `UPDATE ${table}
+    SET helpfulness=helpfulness + 1
+    WHERE ${column}=$1`,
+    values: [id]
+  }
+}
+const report = (table, column, id) => {
+  return {
+    name: 'mark-reported',
+    text: `UPDATE ${table}
+    SET reported=false
+    WHERE ${column}=$1`,
+    values: [id]
+  }
+}
 module.exports = {
   query: (text, params, callback) => {
     return pool.query(text, params, callback)
@@ -88,7 +117,6 @@ module.exports = {
       count: count,
       offset: (page - 1) * count
     };
-    // console.log(values);
     return pool.query(questionPageQuery(values))
   },
   answersPageQuery: (question_id, count = 5, page = 1) => {
@@ -110,5 +138,14 @@ module.exports = {
   },
   insertAnswer: (fields) => {
     return pool.query(insertAnswer(fields))
+  },
+  insertPhoto: (fields) => {
+    return pool.query(insertPhoto(fields))
+  },
+  markHelpful: (table, column, id) => {
+    return pool.query(markHelpful(table, column, id))
+  },
+  report: (table, column, id) => {
+    return pool.query(report(table, column, id))
   }
 }

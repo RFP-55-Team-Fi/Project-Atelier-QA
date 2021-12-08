@@ -1,0 +1,4 @@
+qa_backup.qz
+qa_dump.sql
+/loadTesting
+/docker

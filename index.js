@@ -35,6 +35,7 @@ app.get('/qa/questions', (req, res) => {
       //get answers to questions
       //------------------------
       .then((results) => {
+        // console.log(results)
         return Promise.all(results.rows.map((question) => {
           response.push(question);
           return db.answersQuery(question.question_id);

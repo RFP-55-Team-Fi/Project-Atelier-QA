@@ -1,18 +1,24 @@
 const { Pool, Client } = require('pg');
 const password = require('./../config.js').password;
+const PORT = 5432
 
 const pool = new Pool({
-  host: 'localhost',
+  host: '54.176.20.179',
   user: 'dprejs',
   database: 'SDC',
-  password: password
+  password: password,
+  port: PORT
+
 })
 pool.connect((err, client, release) => {
   if(err) {
-    return console.log('error aquiring client', err.stack);
+    return console.log(`error aquiring postges connection at: ${PORT}`, err.stack);
+  } else {
+    console.log(`connected to postgres PORT: ${PORT}`)
   }
 })
 const questionPageQuery = (values) => {
+  // console.log(values)
   return {
     name: 'questions-with-pagination',
     text: `SELECT *

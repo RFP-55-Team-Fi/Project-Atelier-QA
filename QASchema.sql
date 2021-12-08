@@ -38,3 +38,9 @@ COPY photos
 FROM '/home/dprejs/Desktop/hackreactor work/SDC/CSV/answers_photos.csv'
 DELIMITER ','
 CSV HEADER;
+
+CREATE INDEX product_index ON questions USING hash (product_id);
+
+CREATE INDEX question_index ON answers USING hash (question_id);
+
+CREATE INDEX answer_index ON photos USING hash (answer_id);

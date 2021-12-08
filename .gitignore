@@ -1,3 +1,7 @@
 node_modules/
 package-lock.json
 config.js
+qa_backup.qz
+qa_dump.sql
+docker/
+qa_backup.gz

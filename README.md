@@ -2,6 +2,9 @@
 
 This is the server and database for the "Questions and Answers" micro-services which supports a retail web application, and is optimize to handle webscale traffic.
 
+# Contributer 
+Daniel Prejs [![Linkedin: LinkedIn](https://img.shields.io/badge/-LinkedIn-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/daniel-prejs/)](https://www.linkedin.com/in/daniel-prejs/)
+
 # Tech Stack 
 
 ![node](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
